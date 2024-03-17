@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        canvas{
+            background : rgba(48,48,48);
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas"></canvas>
+    <script>
+        const canvas = document.querySelector('.canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.canvas.width  = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', e=>{
+            ctx.canvas.width  = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+        });
+
+        const mousepos = {x:0, y:0};
+        const radius = 20;
+        let click = false;
+        let a = (window.innerWidth/2);
+        let b = window.innerHeight/2;
+        let re = null;
+        let dy = 5;
+
+
+        class Curve{
+            constructor(){
+                this.x1=400;
+                this.y1=window.innerHeight/2;
+                this.x2=window.innerWidth-400;
+                this.y2=window.innerHeight/2;
+            }
+            draw(){
+                ctx.beginPath();
+                ctx.moveTo(this.x1,this.y1);
+                ctx.quadraticCurveTo(a,b,this.x2,this.y2);
+                ctx.lineWidth=5;
+                ctx.strokeStyle="red";
+                ctx.stroke();
+            }
+        }
+
+        class Ball{
+            constructor(){
+                this.x = mousepos.x;
+                this.y = mousepos.y;
+            }
+            draw(){
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = "blue";
+                ctx.fill();
+
+            }
+        }
+
+        canvas.addEventListener('click', e =>{
+            mousepos.x = e.layerX;
+            mousepos.y = e.layerY;
+            click = true;
+            animation();
+        });
+
+        function animation(){
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var ball = new Ball();
+            var curve = new Curve();
+            ball.draw();
+            curve.draw();
+            if (mousepos.y>=window.innerHeight/2+200){
+                dy*=-1;
+                mousepos.y += dy;
+
+            }
+            else {
+                mousepos.y += dy;
+            }
+
+            if (ball.y >= b - radius-5){
+                a = ball.x;
+                b = mousepos.y + radius +5;
+            }
+
+            if (ball.y > canvas.height){
+                cancelAnimationFrame(re);
+            }
+            else{
+                re = requestAnimationFrame(animation);
+            }
+        }
+
+    </script>
+</body>
+</html>

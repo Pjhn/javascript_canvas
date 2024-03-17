@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        canvas{
+            background:rgb(48, 48, 48);
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas"></canvas>
+    <script>
+        const canvas=document.querySelector('.canvas');
+        const context = canvas.getContext('2d');
+        context.canvas.width  = window.innerWidth;
+        context.canvas.height = window.innerHeight;
+
+        const mousepos ={x:0, y:0};
+        const arc ={x:0, y:0};
+        const color = ["#FFEBEE","#E91E63"];
+        const r = 50;
+        let vx = 10;
+        let vy = 10;
+        let speed = 0;
+
+        function barDraw(){
+            context.shadowColor = 'pink';
+            context.shadowBlur = 20;
+
+            context.beginPath();
+            context.rect(mousepos.x-150,mousepos.y-20,300,50);
+            context.fillStyle=color[0];
+            context.fill();
+
+        }
+
+        function ballStart(){
+
+
+            context.beginPath();
+            context.arc(arc.x,arc.y,r,0,Math.PI*2, false);
+            arc.x=r+(Math.random()*(context.canvas.width-r));
+            arc.y=r+(Math.random()*(context.canvas.height-r));
+            context.fillStyle=color[1];
+            context.fill();
+
+        }
+
+        function ballDraw(){
+            context.shadowColor = 'pink';
+            context.shadowBlur = 0;
+
+            context.beginPath();
+            context.arc(arc.x,arc.y,r,0,Math.PI*2, false);
+            context.fillStyle=color[1];
+            context.fill();
+            
+
+            arc.x+=vx;
+            arc.y+=vy;
+
+            if (arc.x+r>=context.canvas.width || arc.x-r<=0){
+                vx=-vx;
+                if (arc.x>=context.canvas.width){
+                    arc.x=r+(Math.random()*(context.canvas.width-r));
+                    arc.y=r+(Math.random()*(context.canvas.width-r));
+
+                }
+                else if(arc.x<=0){
+                    arc.x=r+(Math.random()*(context.canvas.width-r));
+                    arc.y=r+(Math.random()*(context.canvas.width-r));
+
+                }
+            }
+            else if(arc.y+r>=context.canvas.height || arc.y-r<=0){
+                vy=-vy;
+                if(arc.y>=context.canvas.height){
+                    arc.x=r+(Math.random()*(context.canvas.width-r));
+                    arc.y=r+(Math.random()*(context.canvas.width-r));
+
+
+                }
+                else if (arc.y<=0){
+                    arc.x=r+(Math.random()*(context.canvas.width-r));
+                    arc.y=r+(Math.random()*(context.canvas.width-r));
+
+
+                }
+            }
+
+
+            if((arc.x>mousepos.x-150-r && arc.x<mousepos.x+150+r) && (arc.y<mousepos.y-20+50+r && arc.y>mousepos.y-20-r)){
+
+                const x1 = Math.abs(mousepos.x-150-r-arc.x);
+                const x2 = Math.abs(mousepos.x+150+r-arc.x);
+                const y1 = Math.abs(mousepos.y-20+50+r-arc.y);
+                const y2 = Math.abs(mousepos.y-20-r-arc.y);
+                const min = Math.min(x1,x2,y1,y2);
+
+                if (min == x1){
+                    vx*=-1;
+                    arc.x=arc.x-x1;
+                }
+                else if(min==x2){
+                    vx*=-1;
+                    arc.x=arc.x+x2;
+                }
+                else if (min==y2){
+                    vy*=-1;
+                    arc.y=arc.y-y2;
+                }
+                else if (min==y1){
+                    vy*=-1;
+                    arc.y=arc.y+y1;
+                }
+            }
+
+
+        }
+        canvas.addEventListener('mousemove', e=>{
+
+            mousepos.x=e.layerX;
+            mousepos.y=e.layerY;
+        })
+
+
+        function animation(){
+            context.clearRect(0,0,canvas.width,canvas.height);
+            barDraw();
+            ballDraw();
+            re=requestAnimationFrame(animation);
+           
+
+
+        }
+        
+        ballStart();
+        animation();
+
+    </script>
+    
+</body>
+</html>
